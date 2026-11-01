@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Threat Analyzer</title>
+    <!--tailwind CSS-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body{
+            background-color:#101014;
+            color:#FFFFFF;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        }
+        .panel-card{
+            background-color:#181820;
+            border:1px solid #2A2A35;
+        }
+        @keyframes pulse-ring{
+            0%{transform:scale(0.95);opacity:0.8;}
+            50%{transform:scale(1.3);opacity:0.3;}
+            100%{transform:scale(0.95);opacity:0.8;}
+        }
+        .pulse-node{
+            animation:pulse-ring 2s infinite ease-in-out;
+            transform-origin:center;
+
+        }
+        .node{transition:opacity.4s;}
+    </style>
+</head>
+<body class="p-4 md:p-6 min-h-screen flex flex-col justify-between">
+    <!--header file-->
+    <header class="mb-4 text-center md:text-left">
+        <h1 class="text-xl md:text-2xl font-bold tracking-wide"style="color:#00b4d8;">
+            CYBERSECURITY THREAT INTELLIGENCE & SCAM CALL DETECTOR
+        </h1>
+    </header>
+    <!--MAIN DASHBOARD-->
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
+        <!--top left-->
+        <div class="panel-card p-4 rounded-lg flex flex-col justify-between">
+            <h2 class="text-sm font-semibold text-gray-200 mb-2">Live traffic flow rate(curvy)</h2>
+            <div class="relative w-full h-48 md:h-56">
+                <canvas id="linechart"></canvas>
+            </div>
+        </div>
+        <!--top right-->
+         <div class="panel-card p-4 rounded-lg flex flex-col justify-between">
+            <h2 class="text-sm font-semibold text-gray-200 mb-2">ASIA CYBER THREAT HEATMAP</h2>
+            <div class="relative w-full h-48 md:h-56 bg-[#121219] rounded flex items-center justify-center overflow-hidden border border-['#2A2A35']">
+                <!--asia regional mapping svg-->
+                <svg viewBox="0 0 800 400" class="w-full h-full">
+                    
+                    <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="m 40 0 L 0 0 0 40"fill="none" stroke="#2A2A35" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%"fill="url(#grid)"/>
+                    <!--india node-->
+                    <g class="node" data-cc="91"
+                    transform="translate(300,200)">
+                        <circle id="node-india-bg" cx="0" cy="0" r="14" fill="#E63946" class="pulse-node"/>
+                        <circle id="node-india" cx="0" cy="0" r="8" fill="#E63946" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <text id="label-india" x="14" y="4" fill="#FFFFFF" font-size="12" font-weight="bold">india(extreme)</text>
+                    </g>
+                    <!--china node-->
+                    <g class="node" data-cc="86"
+                    transform="translate(480,130)">
+                        <circle cx="0" cy="0" r="12" fill="#FF9F1C" class="pulse-node"/>
+                        <circle cx="0" cy="0" r="7" fill="#FF9F1C" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <text x="12" y="4" fill="#FFFFFF" font-size="12" font-weight="bold">China(mid)</text>
+                    </g>
+                    <!--japan node-->
+                     <g class="node" data-cc="81"
+                     transform="translate(680,130)">
+                        <circle cx="0" cy="0" r="9" fill="#FFD166" class="pulse-node"/>
+                        <circle cx="0" cy="0" r="5" fill="#FFD166" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <text x="10" y="4" fill="#FFFFFF" font-size="12" font-weight="bold">Japan (lowest)</text>
+                    </g>
+                    <!--indonesia node-->
+                     <g class="node" data-cc="62"
+                     transform="translate(520,310)">
+                        <circle cx="0" cy="0" r="8" fill="#00B4D8" class="pulse-node"/>
+                        <circle cx="0" cy="0" r="5" fill="#00B4D8" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <text x="10" y="4" fill="#FFFFFF" font-size="12" font-weight="bold">indonesia(normal)</text>
+                    </g>
+                    <!--saudi arabia node-->
+                     <g class="node" data-cc="966"
+                     transform="translate(100,180)">
+                        <circle cx="0" cy="0" r="11" fill="#FF9F1C" class="pulse-node"/>
+                        <circle cx="0" cy="0" r="6" fill="#FF9F1C" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <text x="12" y="4" fill="#FFFFFF" font-size="12" font-weight="bold">Saudi arabia(mid)</text>
+                    </g>
+                    <!--thailand node-->   
+                    <g class="node" data-cc="66"
+                     transform="translate(450,230)">
+                        <circle cx="0" cy="0" r="8" fill="#00B4D8" class="pulse-node"/>
+                        <circle cx="0" cy="0" r="5" fill="#00B4D8" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <text x="10" y="4" fill="#FFFFFF" font-size="12" font-weight="bold">Thailand(normal)</text>
+                    </g>
+                 </svg>
+            </div>
+        </div>
+        <!--bottom left pie chart-->
+        <div class="panel-card p-4 rounded-lg flex flex-col justify-between">
+            <h2 class="text-sm font-semibold text-gray-200 mb-2">Threat severity Distribution</h2>
+            <div class="relative w-full h-48 md:h-56 flex justify-center items-center">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+        <!--bottom right bar chart-->
+        <div class="panel-card p-4 rounded-lg flex flex-col justify-between">
+            <h2 class="text-sm font-semibold text-gray-200 mb-2">Attack vector counts</h2>
+            <div class="relative w-full h-48 md:h-56">
+                <canvas id="barchart"></canvas>
+            </div>
+        </div>
+    </main>
+    <!--interactive scam call checker panel-->
+    <footer class="panel-card p-4 rounded-lg mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+            <span class="font-bold text-sm" style="color:#FFD166;">UNKNOWN CALL SCAM DETECTOR</span>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <label for="phoneinput" class="text-xs text-gray-300 whitespace-nowrap">Enter number</label>
+                <input id="phoneinput" type="tel" value="+91 9999999999"
+                class="bg-[#2A2A35] border-border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#00B4D8]w-full md:w-48">
+                <button onclick="analyzescamcall()"
+                class="font-bold text-xs px-4 py-2 rounded transition-color text-black whitespace-nowrap"
+                style="background-color: #00B4D8;"
+                onmouseover="this.style.backgroundColor='#FFD166'"
+                onmouseout="this.style.backgroundColor='#00B4D8'">
+                ANALYZE
+            </button>
+                            
+            </div>
+        </div>
+        <!--dynamic output result-->
+        <div id="scamresult"class="text-xs md:text-sm text-gray-400 font-semibold w-full md:w-auto text-center md:text-right">
+            Status:awaiting phone number entry...
+        </div>
+         <ul id="reasons" class="text-xs text-gray-400 list-disc pl-5"></ul>
+        <p class="text-[11px] text-gray-500">do not share your OTP,PIN or bank details to the number even if it is safe as it is rule-based estimate not a final verdict </p>
+    </footer>
+    <!--javascript-->
+    <script>
+        //color defination
+        const COLOR_TEAL='#00B4D8';
+        const COLOR_YELLOW='#FFD166';
+        const COLOR_ORANGE='#FF9F1C';
+        const COLOR_DEEP_ORANGE='#E63946';
+        let currentRiskScore = 20;
+        //SMOOTH CURVY LINE CHART
+        const ctxline=document.getElementById('linechart').getContext('2d');
+        const labelsline=Array.from({length:30},(_,i) =>i .toString());
+        let dataLinePoints=labelsline.map((_,i)=> 25 + 5*Math.sin(i*0.3));
+        const linechart= new Chart(ctxline, {
+            type:'line',
+            data:{
+                labels: labelsline,
+                datasets:[{
+                    label:'Network flow',
+                    data: dataLinePoints,
+                    borderColor: COLOR_TEAL,
+                    borderWidth:2,
+                    tension:0.4,//curvy spline effect
+                    pointRadius: 0,
+                    fill: false
+                },{
+                    label:'threshold(42)',
+                    data:Array(30).fill(42),
+                    borderColor:COLOR_DEEP_ORANGE,
+                    borderWidth:1.5,
+                    borderDash:[5,5],
+                    pointRadius:0,
+                    fill:false
+                }]
+            },
+            options:{
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins:{legend:{labels:{color:'#FFFFFF',boxWidth:12}}},
+                scales:{
+                    x:{display:false},
+                    y:{
+                        min:10,max:65,
+                        grid:{color:'#2A2A35'},
+                        ticks:{color:'#a0a0a0'}
+                    }
+                }
+            }
+        });
+        //threat severity pie chart
+        const ctxPie=document.getElementById('pieChart').getContext('2d');
+        const pieChart= new Chart(ctxPie, {
+            type:'pie',
+            data:{
+                labels: ['extreme','mid','lowest','safe'],
+                datasets:[{
+                    data: [10,15,15,60],
+                    backgroundColor: [COLOR_DEEP_ORANGE,COLOR_ORANGE,COLOR_YELLOW,COLOR_TEAL],
+                    borderColor:'#181820',
+                    borderWidth:2,
+                    offset:[12, 0, 0, 0]//explode extreme slice
+                }]
+            },
+            options:{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins:{
+                    legend: {position:'right',labels:{color:'#FFFFFF',boxWidth:12}}
+                }
+            }
+        });
+        //attack vector bar chart
+        const ctxBar=document.getElementById('barchart').getContext('2d');
+        const barchart=new Chart(ctxBar, {
+            type:'bar',
+            data:{
+                labels:['malware','phishing','scam call','DDoS'],
+                datasets:[{
+                    data:[20,25,30,15],
+                    backgroundColor:[COLOR_DEEP_ORANGE,COLOR_ORANGE,COLOR_YELLOW,COLOR_TEAL],
+                    borderRadius:4,
+                    barThickness:28
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio: false,
+                plugins: {legend:{display: false}},
+                scales:{
+                    x: {grid:{display: false}, ticks: {color:'#FFFFFF'}},
+                    y: {grid:{color:'#2A2A35'}, ticks: {color:'#a0a0a0'}}
+                }
+            }
+        });
+        //real time animation loop
+        let step= 0;
+        setInterval(()=> {
+            step+= 0.2;
+            const baseline=20+(currentRiskScore*0.35);
+            //update curvy line graph
+           const lineData=labelsline.map((_,i)=>baseline+8*Math.sin(i*0.3+step)+(Math.random()*2-1));
+           linechart.data.datasets[0].data=lineData;
+           linechart.data.datasets[0].borderColor=currentRiskScore>75?COLOR_DEEP_ORANGE:(currentRiskScore>45?COLOR_ORANGE:COLOR_TEAL);
+           linechart.update('none');
+           barchart.data.datasets[0].data=[
+            Math.min(95,Math.floor(currentRiskScore*0.8)+Math.floor(Math.random()*10)),
+            Math.min(95,Math.floor(currentRiskScore*0.7)+Math.floor(Math.random()*10)),
+            Math.min(98,Math.floor(currentRiskScore*1.1)+Math.floor(Math.random()*5)),
+            Math.min(85,Math.floor(currentRiskScore*0.4)+Math.floor(Math.random()*10))
+            ];
+            barchart.update('none');
+        },1000);
+        //updates
+        function updateAllDashboardVisuals(score){
+            currentRiskScore=score;
+            if(score>75){
+                pieChart.data.datasets[0].data=[65,20,10,5];
+                
+            }else if(score>45){
+                pieChart.data.datasets[0].data=[20,50,20,10];
+
+            }else{
+                pieChart.data.datasets[0].data=[5,10,25,60];
+            }
+            pieChart.update();
+            const nodeIndia=document.getElementById('node-india');
+            const nodeIndiaBg=document.getElementById('node-india-bg');
+            const labelIndia=document.getElementById('label-india');
+            if(score>75){
+                nodeIndia.setAttribute('fill',COLOR_DEEP_ORANGE);
+                nodeIndiaBg.setAttribute('fill',COLOR_DEEP_ORANGE);
+                labelIndia.textContent=`India(CRITICAL:${score})`;
+            }else if(score>45){
+                nodeIndia.setAttribute('fill',COLOR_ORANGE);
+                nodeIndiaBg.setAttribute('fill',COLOR_ORANGE);
+                labelIndia.textContent=`India(SUSPICIOUS:${score})`;
+                
+            }else{
+                nodeIndia.setAttribute('fill',COLOR_TEAL);
+                nodeIndiaBg.setAttribute('fill',COLOR_TEAL);
+                labelIndia.textContent=`India(CLEAN:${score})`;
+            }
+
+            
+
+        }
+        //scam call analyzer
+       function analyzescamcall(){
+        const rawInput=document.getElementById('phoneinput').value.trim();
+        const resultBox=document.getElementById('scamresult');
+        //validation rules
+        if(!rawInput){
+            resultBox.innerText="❌ ERROR:input field cannot be empty. Enter a valid phone number";
+            resultBox.style.color=COLOR_YELLOW;
+            return;
+        }
+        if (/[a-zA-Z]/.test(rawInput)){
+            resultBox.innerText="❌ERROR:Invalid input format.Alphabetic characters are restricted. please enter a valid number.";
+            resultBox.style.color=COLOR_DEEP_ORANGE;
+            return;
+
+        }
+        const digitsOnly=rawInput.replace(/\D/g,'');
+        if (digitsOnly.length<7||digitsOnly.length>15){
+            resultBox.innerText="⚠️ ERROR:invalid phone number length.standerd length must be between 7 to 15";
+            resultBox.style.color=COLOR_ORANGE;
+            return;
+        }
+        const highRiskPatterns=["99999","00000","12345","66666","88888","11111"];
+        const isBlacklisted=highRiskPatterns.some(pattern => rawInput.includes(pattern));
+
+        let riskScore=15;
+        if(isBlacklisted){
+            riskScore=92;
+
+        }else if(/(\d)\1{3,}/.test(digitsOnly)){
+            riskScore=82;
+        }else{
+            let sum=0;
+            for(let i=0;i<digitsOnly.length;i++){
+                sum += parseInt(digitsOnly.charAt(i),10);
+            }
+            riskScore=(sum*7)%40+10;
+        }
+
+
+            
+            
+            if(riskScore > 75){
+                resultBox.innerText=`⚠️ HIGH SCAM RISK!(score:${riskScore}/100)-financial fraud bot/block immediately.`;
+                resultBox.style.color= COLOR_DEEP_ORANGE;
+
+            }else if(riskScore > 45){
+                resultBox.innerText=`⚡SUSPICIOUS(score:${riskScore}/100)-universal robocall.exercise caution.`;
+                resultBox.style.color= COLOR_ORANGE;
+
+            }else {
+                resultBox.innerText=`✅SAFE/CLEAN(score:${riskScore}/100)-no spam flags in database.`;
+                resultBox.style.color= COLOR_TEAL;
+
+            }    
+            updateAllDashboardVisuals(riskScore); 
+           }
+    </script>
+</body>
+</html>
